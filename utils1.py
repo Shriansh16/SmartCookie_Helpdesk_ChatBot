@@ -9,9 +9,10 @@ from langchain.vectorstores import Pinecone
 from langchain.vectorstores import Pinecone
 load_dotenv()
 KEY = os.getenv("OPENAI_API_KEY")
+#KEY=st.secrets["OPENAI_API_KEY"]
 
 pc = PineconeClient(
-    api_key=os.environ.get("PINECONE_API_KEY")
+    api_key=os.getenv("PINECONE_API_KEY")
 )
 index_name='smart-cookie-chatbot'
 index=pc.Index(index_name)
