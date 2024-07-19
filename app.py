@@ -15,8 +15,8 @@ from utils1 import *
 
 # Load environment variables
 load_dotenv()
-KEY = os.getenv("OPENAI_API_KEY")
-#KEY=st.secrets["OPENAI_API_KEY"]
+#KEY = os.getenv("OPENAI_API_KEY")
+KEY=st.secrets["OPENAI_API_KEY"]
 
 # Streamlit setup
 st.subheader("HELPDESK CHAT")
