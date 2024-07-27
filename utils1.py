@@ -26,7 +26,7 @@ def find_match(input):
                        )
     result=vectorstore.similarity_search(
     input,  # our search query
-    k=5  # return 5 most relevant docs
+    k=7  # return 5 most relevant docs
       )
     return result
 
