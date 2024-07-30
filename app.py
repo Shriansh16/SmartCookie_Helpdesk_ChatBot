@@ -12,11 +12,12 @@ from langchain.prompts import (
     MessagesPlaceholder
 )
 from utils1 import *
+import base64
 
 # Load environment variables
 load_dotenv()
-#KEY = os.getenv("OPENAI_API_KEY")
-KEY=st.secrets["OPENAI_API_KEY"]
+KEY = os.getenv("OPENAI_API_KEY")
+#KEY=st.secrets["OPENAI_API_KEY"]
 
 # Streamlit setup
 st.subheader("HELPDESK CHAT")
@@ -41,7 +42,7 @@ and if the answer is not contained within the text below, say 'I don't know' and
 human_msg_template = HumanMessagePromptTemplate.from_template(template="{input}")
 
 prompt_template = ChatPromptTemplate.from_messages([system_msg_template, MessagesPlaceholder(variable_name="history"), human_msg_template])
-
+link='logo.png'
 # Create conversation chain
 conversation = ConversationChain(memory=st.session_state.buffer_memory, prompt=prompt_template, llm=llm, verbose=True)
 
@@ -69,6 +70,11 @@ with text_container:
 with response_container:
     if st.session_state['responses']:
         for i in range(len(st.session_state['responses'])):
-            message(st.session_state['responses'][i], key=str(i))
+            with st.chat_message('Momos', avatar=link):
+                st.write(st.session_state['responses'][i])
             if i < len(st.session_state['requests']):
                 message(st.session_state["requests"][i], is_user=True, key=str(i) + '_user')
+
+#message("Hey, \nwhat's a chatbot?", is_user=True, avatar="{URL}")
+#message(st.session_state['responses'][i], key=str(i),avatar_style="😂")
+#message(st.session_state["requests"][i], is_user=True, key=str(i) + '_user')

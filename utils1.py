@@ -8,14 +8,14 @@ from pinecone import Pinecone as PineconeClient
 from langchain.vectorstores import Pinecone
 from langchain.vectorstores import Pinecone
 load_dotenv()
-#KEY = os.getenv("OPENAI_API_KEY")
-KEY=st.secrets["OPENAI_API_KEY"]
-#pkey=os.getenv("PINECONE_API_KEY")
+KEY = os.getenv("OPENAI_API_KEY")
+#KEY=st.secrets["OPENAI_API_KEY"]
+pkey=os.getenv("PINECONE_API_KEY")
 
-pc = PineconeClient(
+"""pc = PineconeClient(
     api_key=st.secrets["PINECONE_API_KEY"]
-)
-#pc = PineconeClient(api_key=pkey)
+)"""
+pc = PineconeClient(api_key=pkey)
 index_name='smart-cookie-chatbot'
 index=pc.Index(index_name)
 model=OpenAIEmbeddings(api_key=KEY)
