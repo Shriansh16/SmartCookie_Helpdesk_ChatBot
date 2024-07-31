@@ -29,16 +29,15 @@ if 'requests' not in st.session_state:
     st.session_state['requests'] = []
 
 # Initialize the language model
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=KEY)
+llm = ChatOpenAI(model_name="gpt-4o", openai_api_key=KEY,temperature=0.5)
 
 # Initialize conversation memory
 if 'buffer_memory' not in st.session_state:
     st.session_state.buffer_memory = ConversationBufferWindowMemory(k=3, return_messages=True)
 
 # Define prompt templates
-system_msg_template = SystemMessagePromptTemplate.from_template(template="""Answer the question as truthfully as possible using the provided context,
-and if the answer is not contained within the text below, say 'I don't know' and while answering please don't use the sentences like 'Based on the provided context'""")
-
+system_msg_template = SystemMessagePromptTemplate.from_template(template="""Answer the question in a friendly and helpful manner, as if you are a real helpdesk support agent. Use only the information provided in the context below, and avoid phrases like 'In the context of the provided documents' or similar. If the answer is not contained within the text, say 'I'm not sure about that, but I'm here to help with anything else you need!'""")
+                                                                           #Answer the question in a friendly and helpful manner, as if you are a real helpdesk support agent. Use only the information provided in the context below, and avoid phrases like 'In the context of the provided documents' or similar. If the answer is not contained within the text, say 'I'm not sure about that, but I'm here to help with anything else you need!'
 human_msg_template = HumanMessagePromptTemplate.from_template(template="{input}")
 
 prompt_template = ChatPromptTemplate.from_messages([system_msg_template, MessagesPlaceholder(variable_name="history"), human_msg_template])
@@ -65,6 +64,16 @@ with text_container:
         # Append the new query and response to the session state
         st.session_state.requests.append(query)
         st.session_state.responses.append(response)
+st.markdown(
+    """
+    <style>
+    [data-testid="stChatMessageContent"] p{
+        font-size: 1.0rem;
+    }
+    </style>
+    """, unsafe_allow_html=True
+)
+
 
 # Display chat history
 with response_container:
@@ -78,3 +87,4 @@ with response_container:
 #message("Hey, \nwhat's a chatbot?", is_user=True, avatar="{URL}")
 #message(st.session_state['responses'][i], key=str(i),avatar_style="😂")
 #message(st.session_state["requests"][i], is_user=True, key=str(i) + '_user')
+#"""Answer the question in a friendly and helpful manner, as if you are a real helpdesk support agent. Provide accurate information based on the context provided. If you don't know the answer, simply say 'I'm not sure, but I'll find out for you!' or offer to assist with something else."""
