@@ -13,22 +13,12 @@ from langchain.prompts import (
 )
 from utils1 import *
 import base64
-import speech_recognition as sr
 
 # Load environment variables
 load_dotenv()
 KEY = os.getenv("OPENAI_API_KEY")
 #KEY=st.secrets["OPENAI_API_KEY"]
-recognizer = sr.Recognizer()
-def recognize_speech():
-    with sr.Microphone() as source:
-        status_message = st.empty()
-        status_message.write("Listening... Please speak clearly.")
-        audio = recognizer.listen(source)
-        status_message.write("Processing...")
-        text = recognizer.recognize_google(audio)
-        status_message.empty()  # Clear the status message
-        return text
+
 # Streamlit setup
 st.subheader("HELPDESK CHAT")
 
@@ -39,7 +29,7 @@ if 'requests' not in st.session_state:
     st.session_state['requests'] = []
 
 # Initialize the language model
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=KEY,temperature=0.5)
+llm = ChatOpenAI(model_name="gpt-4o", openai_api_key=KEY,temperature=0.5)
 
 # Initialize conversation memory
 if 'buffer_memory' not in st.session_state:
@@ -60,34 +50,25 @@ response_container = st.container()
 # Container for text box
 text_container = st.container()
 
-
-
 with text_container:
-    query = st.text_input("Enter your query: ", key="input")
-    st.divider()
-    if st.button('🎤 Click here to speak', key="natural_speech"):
-        result = recognize_speech()
-    else:
-        result = None
-    user_query=query if query else result
-
-    if user_query:
+    query = st.text_input("Query: ", key="input")
+    if query:
         with st.spinner("typing..."):
             conversation_string = get_conversation_string()
-            refined_query = query_refiner(conversation_string, user_query)
+            refined_query = query_refiner(conversation_string, query)
             #st.subheader("Refined Query:")
             #st.write(refined_query)
             context = find_match(refined_query)
-            response = conversation.predict(input=f"Context:\n{context}\n\nQuery:\n{user_query}")
+            response = conversation.predict(input=f"Context:\n{context}\n\nQuery:\n{query}")
         
         # Append the new query and response to the session state
-        st.session_state.requests.append(user_query)
+        st.session_state.requests.append(query)
         st.session_state.responses.append(response)
 st.markdown(
     """
     <style>
     [data-testid="stChatMessageContent"] p{
-        font-size: 1rem;
+        font-size: 1.0rem;
     }
     </style>
     """, unsafe_allow_html=True
@@ -103,7 +84,3 @@ with response_container:
             if i < len(st.session_state['requests']):
                 message(st.session_state["requests"][i], is_user=True, key=str(i) + '_user')
 
-#message("Hey, \nwhat's a chatbot?", is_user=True, avatar="{URL}")
-#message(st.session_state['responses'][i], key=str(i),avatar_style="😂")
-#message(st.session_state["requests"][i], is_user=True, key=str(i) + '_user')
-#"""Answer the question in a friendly and helpful manner, as if you are a real helpdesk support agent. Provide accurate information based on the context provided. If you don't know the answer, simply say 'I'm not sure, but I'll find out for you!' or offer to assist with something else."""
