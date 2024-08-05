@@ -1,5 +1,5 @@
 streamlit
---upgrade pip
+pip --upgrade
 PyPDF2
 langchain
 langchain-community
