@@ -12,13 +12,12 @@ from langchain.prompts import (
     MessagesPlaceholder
 )
 from utils1 import *
-import base64
+from Speech_Recognizer import *
 
 # Load environment variables
 load_dotenv()
 KEY = os.getenv("OPENAI_API_KEY")
 #KEY=st.secrets["OPENAI_API_KEY"]
-
 # Streamlit setup
 st.subheader("HELPDESK CHAT")
 
@@ -29,7 +28,7 @@ if 'requests' not in st.session_state:
     st.session_state['requests'] = []
 
 # Initialize the language model
-llm = ChatOpenAI(model_name="gpt-4o", openai_api_key=KEY,temperature=0.5)
+llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=KEY,temperature=0.5)
 
 # Initialize conversation memory
 if 'buffer_memory' not in st.session_state:
@@ -37,7 +36,7 @@ if 'buffer_memory' not in st.session_state:
 
 # Define prompt templates
 system_msg_template = SystemMessagePromptTemplate.from_template(template="""Answer the question in a friendly and helpful manner, as if you are a real helpdesk support agent. Use only the information provided in the context below, and avoid phrases like 'In the context of the provided documents' or similar. If the answer is not contained within the text, say 'I'm not sure about that, but I'm here to help with anything else you need!'""")
-                                                                           #Answer the question in a friendly and helpful manner, as if you are a real helpdesk support agent. Use only the information provided in the context below, and avoid phrases like 'In the context of the provided documents' or similar. If the answer is not contained within the text, say 'I'm not sure about that, but I'm here to help with anything else you need!'
+                                                                           
 human_msg_template = HumanMessagePromptTemplate.from_template(template="{input}")
 
 prompt_template = ChatPromptTemplate.from_messages([system_msg_template, MessagesPlaceholder(variable_name="history"), human_msg_template])
@@ -50,25 +49,32 @@ response_container = st.container()
 # Container for text box
 text_container = st.container()
 
+
+
 with text_container:
-    query = st.text_input("Query: ", key="input")
-    if query:
+    query = st.text_input("Enter your query: ", key="input")
+    st.divider()
+    if st.button('🎤 Click here to speak', key="natural_speech"):
+        result = recognize_speech()
+    else:
+        result = None
+    user_query=query if query else result
+
+    if user_query:
         with st.spinner("typing..."):
             conversation_string = get_conversation_string()
-            refined_query = query_refiner(conversation_string, query)
-            #st.subheader("Refined Query:")
-            #st.write(refined_query)
+            refined_query = query_refiner(conversation_string, user_query)
             context = find_match(refined_query)
-            response = conversation.predict(input=f"Context:\n{context}\n\nQuery:\n{query}")
+            response = conversation.predict(input=f"Context:\n{context}\n\nQuery:\n{user_query}")
         
         # Append the new query and response to the session state
-        st.session_state.requests.append(query)
+        st.session_state.requests.append(user_query)
         st.session_state.responses.append(response)
 st.markdown(
     """
     <style>
     [data-testid="stChatMessageContent"] p{
-        font-size: 1.0rem;
+        font-size: 1rem;
     }
     </style>
     """, unsafe_allow_html=True
