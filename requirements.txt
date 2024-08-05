@@ -1,5 +1,4 @@
 streamlit
-pip --upgrade
 PyPDF2
 langchain
 langchain-community
@@ -13,4 +12,3 @@ sentence-transformers
 pinecone-client
 pypdf
 SpeechRecognition
-pyaudio
