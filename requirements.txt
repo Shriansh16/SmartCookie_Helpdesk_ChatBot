@@ -12,4 +12,5 @@ sentence-transformers
 pinecone-client
 pypdf
 SpeechRecognition
+pip --upgrade
 pyaudio
