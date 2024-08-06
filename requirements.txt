@@ -12,5 +12,5 @@ sentence-transformers
 pinecone-client
 pypdf
 SpeechRecognition
-PyAudio-0.2.14.whl
+pyaudio
 
