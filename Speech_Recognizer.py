@@ -1,13 +1,13 @@
 import speech_recognition as sr
+import streamlit as st
 
-r = sr.Recognizer()
+recognizer = sr.Recognizer()
 def recognize_speech():
-  with sr.Microphone() as source:
-    print("Speak Anything :")
-    audio = r.listen(source,timeout=3,phrase_time_limit=10)
-    print('Done, Please wait while we are processing what you said...')
-    try:
-        text = r.recognize_google(audio)
+    with sr.Microphone() as source:
+        status_message = st.empty()
+        status_message.write("Listening... Please speak clearly.")
+        audio = recognizer.listen(source)
+        status_message.write("Processing...")
+        text = recognizer.recognize_google(audio)
+        status_message.empty()  # Clear the status message
         return text
-    except:
-        print("Sorry we could not recognize what you said. You can try again.")
