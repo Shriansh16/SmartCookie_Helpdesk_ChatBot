@@ -12,5 +12,9 @@ sentence-transformers
 pinecone-client
 pypdf
 SpeechRecognition
+PySimpleGUI
 sounddevice
+wave
+
+
 
